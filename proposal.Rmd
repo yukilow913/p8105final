@@ -6,6 +6,7 @@ output:
   html_document:
     df_print: paged
 ---
+HI II 
 
 Tentative Project Title: Rat Sightings in NYC 
 
@@ -13,7 +14,7 @@ Motivation for this project:
 
 Intended Final Products: 
 
-1) EDA: Rat Sightings Overtime graph, Rat Sightings by borough graph, Rat Sightings by location type graph, Rat Sightings by day of week graph. Map of rat sightings in NYC.
+1) EDA: Rat Sightings Overtime graph, Rat Sightings by borough graph, Rat Sightings by location type graph, Rat Sightings by day of week graph, Rat Sightings by month graph. Map of rat sightings in NYC.
 
 2) Statistical analysis: Some type of linear regression? Prediction model?
 
