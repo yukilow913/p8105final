@@ -1,0 +1,27 @@
+---
+title: "P8105 Proposal Deliverable"
+author: "Yuki Low yl5503, Lauren, Trina, Arthur"
+date: "11/8/2023"
+output:
+  html_document:
+    df_print: paged
+---
+
+Tentative Project Title: Rat Sightings in NYC 
+
+Motivation for this project: 
+
+Intended Final Products: 
+
+1) EDA: Rat Sightings Overtime graph, Rat Sightings by borough graph, Rat Sightings by location type graph, Rat Sightings by day of week graph. Map of rat sightings in NYC.
+
+2) Statistical analysis: Some type of linear regression? Prediction model?
+
+
+The group members (names and UNIs) 
+The tentative project title
+The motivation for this project
+The intended final products
+The anticipated data sources
+The planned analyses / visualizations / coding challenges
+The planned timeline
