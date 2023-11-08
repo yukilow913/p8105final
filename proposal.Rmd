@@ -17,6 +17,7 @@ Intended Final Products:
 
 2) Statistical analysis: Some type of linear regression? Prediction model?
 
+Anticipated data source: https://nycopendata.socrata.com/Social-Services/Rat-Sightings/3q43-55fe/data
 
 The group members (names and UNIs) 
 The tentative project title
