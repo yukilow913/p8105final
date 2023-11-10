@@ -17,9 +17,9 @@ Intended Final Products:
 
 2) Statistical analysis: Some type of linear regression? Prediction model? Some analysis is that we can fit a linear regression model and check the accuracy of this model based on some of the predictors of the data set. We can check which predictors are more useful through classic ML techniques such as K means clustering, decision trees, and through a random forest model. To check accuracy we can use AIC and BIC and account for underfitting or overfitting of the model.
 
-3) Visulization: 
+3) Visulization: Some visualizations include plotting our linear regression model, showing how overfitting and underfitting affects the model, creating plotly plots, and organizing all of this in a website. 
 
-4) Coding challenge: 
+4) Coding challenge: Some of the coding challenges include making sure that the data is tidy as well as figuring out which of the predictors have the most amount of impact on our linear regression model.
 
 
 
