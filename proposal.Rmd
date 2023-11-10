@@ -1,25 +1,30 @@
 ---
 title: "P8105 Proposal Deliverable"
-author: "Yuki Low yl5503, Lauren lel2176, Trina, Arthur"
+author: "Yuki Low yl5503, Lauren lel2176, Trina eih2108, Arthur"
 date: "11/8/2023"
 output:
   html_document:
     df_print: paged
 ---
 
-Tentative Project Title: Rat Sightings in NYC 
+# Rat Sightings in NYC (tentative title)
 
-Motivation for this project: As new residents of New York, we are interested in the bustling rat population around us and across each borough. etc. We want to know which areas of the city to avoid and which areas may have the world's best ratatouille. 
+Motivation: As new and returning residents of New York, we are interested in the bustling rat population around us and across each borough. We want to know which areas of the city to avoid and which areas may have the world's best ratatouille. We intend to use a rat sightings dataset made publicly available by NYC Open Data (https://nycopendata.socrata.com/Social-Services/Rat-Sightings/3q43-55fe/data). We anticipate some coding challenges relating to creating readable/interpretable rat sighting maps of New York with a large amount of data. 
 
 Intended Final Products: 
 
-1) EDA: Rat Sightings Overtime graph, Rat Sightings by borough graph, Rat Sightings by location type graph, Rat Sightings by day of week graph, Rat Sightings by month graph. Map of rat sightings in NYC.
+1) EDA: Rat sightings over time graph, rat sightings by borough graph, rat sightings by location type graph, rat sightings by day of week graph, rat sightings by month graph, map of rat sightings in NYC.
 
 2) Statistical analysis: Some type of linear regression? Prediction model?
 
-Anticipated data source: https://nycopendata.socrata.com/Social-Services/Rat-Sightings/3q43-55fe/data
 
 Planned Timeline:
+
+- Data cleaning - Nov 17-22
+- Exploratory data summaries - Nov 22-27
+- Create main plots and conduct analysis - Nov 27-Dec 1
+- Write report - Dec 1-Dec 5
+- Record Screencast - Dec 5-9
 
 
 The group members (names and UNIs) 
