@@ -1,6 +1,6 @@
 ---
 title: "P8105 Proposal Deliverable"
-author: "Yuki Low yl5503, Lauren lel2176, Trina eih2108, Arthur"
+author: "Yuki Low yl5503, Lauren lel2176, Trina eih2108, Arthur as7123"
 date: "11/8/2023"
 output:
   html_document:
@@ -15,7 +15,13 @@ Intended Final Products:
 
 1) EDA: Rat sightings over time graph, rat sightings by borough graph, rat sightings by location type graph, rat sightings by day of week graph, rat sightings by month graph, map of rat sightings in NYC.
 
-2) Statistical analysis: Some type of linear regression? Prediction model?
+2) Statistical analysis: Some type of linear regression? Prediction model? Some analysis is that we can fit a linear regression model and check the accuracy of this model based on some of the predictors of the data set. We can check which predictors are more useful through classic ML techniques such as K means clustering, decision trees, and through a random forest model. To check accuracy we can use AIC and BIC and account for underfitting or overfitting of the model.
+
+3) Visulization: 
+
+4) Coding challenge: 
+
+
 
 
 Planned Timeline:
