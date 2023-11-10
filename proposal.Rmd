@@ -1,16 +1,15 @@
 ---
 title: "P8105 Proposal Deliverable"
-author: "Yuki Low yl5503, Lauren, Trina, Arthur"
+author: "Yuki Low yl5503, Lauren lel2176, Trina, Arthur"
 date: "11/8/2023"
 output:
   html_document:
     df_print: paged
 ---
-HI II 
 
 Tentative Project Title: Rat Sightings in NYC 
 
-Motivation for this project: As new residents of New York, we are interested in the bustling rat population around us and across each borough. etc
+Motivation for this project: As new residents of New York, we are interested in the bustling rat population around us and across each borough. etc. We want to know which areas of the city to avoid and which areas may have the world's best ratatouille. 
 
 Intended Final Products: 
 
@@ -19,6 +18,9 @@ Intended Final Products:
 2) Statistical analysis: Some type of linear regression? Prediction model?
 
 Anticipated data source: https://nycopendata.socrata.com/Social-Services/Rat-Sightings/3q43-55fe/data
+
+Planned Timeline:
+
 
 The group members (names and UNIs) 
 The tentative project title
