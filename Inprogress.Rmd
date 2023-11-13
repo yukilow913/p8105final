@@ -1,0 +1,22 @@
+---
+title: "Data Clean Up"
+author: "Arthur Starodynov"
+date: "2023-11-12"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+
+```{r}
+rat_df <- 
+  read_csv("Data/Rat_Sightings.csv") %>%
+  janitor:: clean_names()
+
+rat_df %>%
+  filter(created_date != closed_date) 
+
+
+```
