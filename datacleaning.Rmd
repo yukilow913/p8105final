@@ -1,0 +1,39 @@
+---
+title: "P8105 Final Project Data Cleaning"
+author: "Yuki Low yl5503, Lauren lel2176, Trina eih2108, Arthur as7123"
+date: "11/20/2023"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+```{r}
+rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified")) %>%
+  janitor::clean_names() %>% 
+  mutate(created_date = mdy_hms(created_date)) %>%
+  mutate(sighting_year = year(created_date),
+         sighting_month = month(created_date),
+         sighting_day = day(created_date),
+         sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
+
+
+borough_over_time <- rats_raw %>% 
+  group_by(sighting_year, sighting_month, sighting_day, borough) %>% 
+  summarize(count = n()) %>% 
+  mutate(date = as.Date(paste(sighting_year, sighting_month, sighting_day, sep = "-"))) %>% 
+  filter(!is.na(borough))
+
+ggplot(borough_over_time, aes(x = date, y = count, color = borough)) +
+  geom_line() +
+  labs(title = "Entries Over Time by Borough",
+       x = "Year",
+       y = "Count") +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+  theme_minimal()
+
+```
