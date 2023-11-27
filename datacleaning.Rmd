@@ -7,25 +7,58 @@ output:
     df_print: paged
 ---
 
-```{r}
+```{r, message = FALSE}
 library(tidyverse)
 library(lubridate)
+library(readr) 
+library("ggplot2") 
+library("dplyr")
+library(xts)
+library("lubridate")
+library("RColorBrewer")
+library("ggthemes")
+library("gridExtra")
+library("leaflet")
+library("highcharter")
+library(scales)
 ```
 
-```{r}
+```{r, warning = FALSE}
 rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified")) %>%
   janitor::clean_names() %>% 
   mutate(created_date = mdy_hms(created_date)) %>%
   mutate(sighting_year = year(created_date),
-         sighting_month = month(created_date),
+         sighting_month_num = month(created_date),
+         sighting_month = month(created_date, label = TRUE, abbr = FALSE),
          sighting_day = day(created_date),
          sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
 
+rats_raw
 
-borough_over_time <- rats_raw %>% 
-  group_by(sighting_year, sighting_month, sighting_day, borough) %>% 
+```
+
+Overall trend in rats 
+```{r}
+overall <- rats_raw %>% 
+  group_by(sighting_year, sighting_month_num, sighting_day) %>% 
   summarize(count = n()) %>% 
-  mutate(date = as.Date(paste(sighting_year, sighting_month, sighting_day, sep = "-"))) %>% 
+  mutate(date = as.Date(paste(sighting_year, sighting_month_num, sighting_day, sep = "-")))
+
+time_series = xts(overall$count , order.by= overall$date)
+
+hchart(time_series, name = "Rat Sightings") %>% 
+  hc_add_theme(hc_theme_darkunica()) %>%
+  hc_credits(enabled = TRUE, text = "Sources: City of New York", style = list(fontSize = "12px")) %>%
+  hc_title(text = "Time Series of NYC Rat Sightings") %>%
+  hc_legend(enabled = TRUE)
+```
+
+Trend in rats by borough over time 
+```{r}
+borough_over_time <- rats_raw %>% 
+  group_by(sighting_year, sighting_month_num, sighting_day, borough) %>% 
+  summarize(count = n()) %>% 
+  mutate(date = as.Date(paste(sighting_year, sighting_month_num, sighting_day, sep = "-"))) %>% 
   filter(!is.na(borough))
 
 ggplot(borough_over_time, aes(x = date, y = count, color = borough)) +
@@ -35,5 +68,53 @@ ggplot(borough_over_time, aes(x = date, y = count, color = borough)) +
        y = "Count") +
   scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
   theme_minimal()
+```
 
+Count of rats by year 
+```{r}
+by_year <- rats_raw %>% 
+  group_by(sighting_year) %>% 
+  count() %>% 
+  ggplot(aes(x = sighting_year, y = n, fill = n)) + 
+  geom_histogram(stat = "identity", position = "dodge") +
+  theme(legend.position ='none',axis.title = element_text(),axis.text.x = element_text(size = 15)) +
+  xlab("Year") + 
+  ylab("Count") +
+  geom_text(aes(label = n), vjust = -0.1, size = 3.75) +
+  ggtitle('Count of Rat Sightings through the Years') + 
+  scale_fill_gradientn(name = '',colours = rev(brewer.pal(10,'Spectral'))) 
+
+by_year
+```
+Counts of rats by month 
+```{r}
+by_month <- rats_raw %>% 
+  group_by(sighting_month) %>% 
+  count() %>% 
+  ggplot(aes(x = sighting_month, y = n, fill = n)) + 
+  geom_histogram(stat = "identity", position = "dodge") +
+  theme(legend.position ='none',axis.title = element_text(),axis.text.x = element_text(size = 13)) +
+  xlab("Month") + 
+  ylab("Count") +
+  geom_text(aes(label = n), vjust = -0.1, size = 3.75) +
+  ggtitle('Count of Rat Sightings by Month') + 
+  scale_fill_gradientn(name = '',colours = rev(brewer.pal(10,'Spectral'))) 
+
+by_month
+```
+Counts of rat by day of the week 
+```{r}
+by_day <- rats_raw %>% 
+  group_by(sighting_weekday) %>% 
+  count() %>% 
+  ggplot(aes(x = sighting_weekday, y = n, fill = n)) + 
+  geom_histogram(stat = "identity", position = "dodge") +
+  theme(legend.position ='none',axis.title = element_text(),axis.text.x = element_text(size = 12)) +
+  xlab("Weekday") + 
+  ylab("Count") +
+  geom_text(aes(label = n), vjust = -0.1, size = 4) +
+  ggtitle('Count of Rat Sightings by Day of Week') + 
+  scale_fill_gradientn(name = '',colours = rev(brewer.pal(10,'Spectral'))) 
+
+by_day
 ```
