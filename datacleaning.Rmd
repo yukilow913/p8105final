@@ -21,6 +21,7 @@ library("gridExtra")
 library("leaflet")
 library("highcharter")
 library(scales)
+library(leaflet.extras)
 ```
 
 ```{r, warning = FALSE}
@@ -187,7 +188,7 @@ nyc = rats_raw %>%
 center_lon = median(nyc$longitude,na.rm = TRUE)
 center_lat = median(nyc$latitude,na.rm = TRUE)
 
-count = data %>%
+count = nyc %>%
   group_by(location) %>%
   count()
 
