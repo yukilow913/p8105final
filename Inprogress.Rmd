@@ -13,10 +13,34 @@ library(readxl)
 ```{r}
 rat_df <- 
   read_csv("Data/Rat_Sightings.csv") %>%
-  janitor:: clean_names()
+  janitor::clean_names() %>% 
+  mutate(created_date = mdy_hms(created_date)) %>%
+  mutate(sighting_year = year(created_date),
+         sighting_month = month(created_date),
+         sighting_day = day(created_date),
+         sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
+```
 
-rat_df %>%
-  filter(created_date != closed_date) 
+```{r}
+zipcount_df<- 
+  rat_df %>%
+  group_by(incident_zip) %>%
+  summarize(cont = n()) 
+
+ggplot(data = zipcount_df, aes(incident_zip, cont)) + 
+  geom_violin()
+```
+
+```{r}
 
 
+
+borough_over_time %>% group_by(sighting_year, sighting_month, sighting_day, borough) %>% 
+  summarize(count = n()) %>% 
+  mutate(date = as.Date(paste(sighting_year, sighting_month, sighting_day, sep = "-")))
+
+ggplot(borough_over_time, aes(x = date, y = count, color = borough)) +
+  geom_line()
+
+```
 ```
