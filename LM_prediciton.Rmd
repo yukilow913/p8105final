@@ -1,0 +1,101 @@
+---
+title: "LM_prediction"
+author: "Arthur Starodynov"
+date: "2023-12-02"
+output: html_document
+---
+
+```{r, message = FALSE}
+library(tidyverse)
+library(lubridate)
+library(readr) 
+library("ggplot2") 
+library("dplyr")
+library(xts)
+library("lubridate")
+library("RColorBrewer")
+library("ggthemes")
+library("gridExtra")
+library("leaflet")
+library("highcharter")
+library(scales)
+library(leaflet.extras)
+library(modelr)
+```
+
+```{r}
+cleaner_rats <- 
+  rats_raw %>%
+  drop_na(descriptor, location_type, incident_address, incident_zip,street_name, borough, latitude, longitude) %>%
+  select(unique_key, agency, descriptor, location_type, incident_address, incident_zip, street_name, borough,latitude, longitude) %>%
+  drop_na() %>%
+  janitor::clean_names()
+
+cleaner_rats <- as.data.frame(unclass(cleaner_rats),stringsAsFactors=TRUE)
+cleaner_rats
+```
+
+
+```{r}
+model1 <-  lm(latitude ~ borough + location_type + incident_zip, data = cleaner_rats)
+model2 <-  lm(longitude ~ borough + location_type + incident_zip, data = cleaner_rats)
+summary(model1)
+summary(model2)
+
+
+```
+
+
+```{r}
+set.seed(23) 
+cleaner_rats1 <- 
+  cleaner_rats %>% 
+  select(location_type, borough, latitude)
+
+rats_folds <- crossv_kfold(cleaner_rats1, k = 10)
+
+rats_folds <- rats_folds %>% mutate(model = map(train, ~ lm(latitude ~ ., data = .)))
+
+rats_folds$model[[1]] %>% summary()
+
+```
+
+
+```{r}
+set.seed(23) 
+cleaner_rats2 <- 
+  cleaner_rats %>% 
+  select(location_type, borough, longitude)
+
+rats_folds2 <- crossv_kfold(cleaner_rats2, k = 10)
+
+rats_folds2 <- rats_folds2 %>% mutate(model = map(train, ~ lm(longitude ~ ., data = .)))
+
+rats_folds2$model[[1]] %>% summary()
+
+```
+
+
+
+
+```{r}
+set.seed(23)
+# Select four variables from the mpg data set in ggplot2
+cleaner_rats %>%
+  select(borough, location_type, street_name, latitude) %>%
+  crossv_kfold(k=20)%>%
+  mutate(model = map(train, ~ lm(latitude ~ ., data = .))) %>%
+  unnest(map2(model, test, ~ augment(.x, newdata = .y))) %>%
+  group_by(.id) %>%
+  summarise(
+    sst = sum((latitude - mean(latitude)) ^ 2),
+    sse = sum((latitude - .fitted) ^ 2),
+    r.squared = 1 - sse / sst
+  ) %>% 
+  # Plot
+  ggplot(aes(r.squared)) +
+    geom_density() +
+    geom_vline(aes(xintercept = mean(r.squared))) +
+    theme_minimal()
+
+```
