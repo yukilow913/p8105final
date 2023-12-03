@@ -1,0 +1,63 @@
+---
+title: "Statistical tests"
+output: html_document
+date: "2023-12-03"
+---
+
+```{r, message = F}
+library(tidyverse)
+library(lubridate)
+library(readr) 
+```
+
+# Data
+
+```{r, warning = F, message = F}
+rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified")) %>%
+  janitor::clean_names() %>% 
+  mutate(created_date = mdy_hms(created_date)) %>%
+  mutate(sighting_year = year(created_date),
+         sighting_month_num = month(created_date),
+         sighting_month = month(created_date, label = TRUE, abbr = FALSE),
+         sighting_day = day(created_date),
+         sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
+
+rats_raw
+```
+
+
+# ANOVA by day of week
+
+```{r}
+library(MASS)
+names(rats_raw)
+
+rats_dow <- rats_raw %>%
+  group_by(sighting_weekday) %>%
+  count()
+
+aov_dow <- aov(n ~ sighting_weekday, data = rats_dow)
+```
+
+
+# T-test by weekend/weekday
+
+```{r}
+rats_weekend <- 
+rats_raw %>% 
+  mutate(weekend = if_else(sighting_weekday %in% c("Sunday", "Saturday"), 1, 0)) %>%
+  group_by(weekend) %>%
+  count()
+
+```
+
+
+# ANOVA by location type
+
+
+# ANOVA by borough
+
+
+
+
+
