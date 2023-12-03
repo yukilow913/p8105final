@@ -5,6 +5,9 @@ date: "2023-12-02"
 output: html_document
 ---
 
+Load packages 
+
+
 ```{r, message = FALSE}
 library(tidyverse)
 library(lubridate)
@@ -23,6 +26,11 @@ library(leaflet.extras)
 library(modelr)
 ```
 
+
+
+Clean data set more on the predictor variables that were googled through research to have the most effect on rat sightings, keeping borough and location type. 
+
+
 ```{r}
 cleaner_rats <- 
   rats_raw %>%
@@ -33,12 +41,16 @@ cleaner_rats <-
 
 cleaner_rats <- as.data.frame(unclass(cleaner_rats),stringsAsFactors=TRUE)
 cleaner_rats
+sample_1 <- cleaner_rats[sample(nrow(cleaner_rats), 500), ]
 ```
 
 
+Run a linear model on the cleaner data set to be able to see which predictor variables had the most impact on the model by looking at their P values. 
+
+
 ```{r}
-model1 <-  lm(latitude ~ borough + location_type + incident_zip, data = cleaner_rats)
-model2 <-  lm(longitude ~ borough + location_type + incident_zip, data = cleaner_rats)
+model1 <-  lm(latitude ~ borough + location_type + incident_zip + street_name, data = sample_1)
+model2 <-  lm(longitude ~ borough + location_type + incident_zip + street_name, data = sample_1)
 summary(model1)
 summary(model2)
 
@@ -46,17 +58,19 @@ summary(model2)
 ```
 
 
+Simply run a kfold technique to have a training and testing data set, run a new linear regression model to see the effect on latitude using 
+
 ```{r}
 set.seed(23) 
 cleaner_rats1 <- 
-  cleaner_rats %>% 
-  select(location_type, borough, latitude)
+  sample_1 %>% 
+  select(location_type, borough,incident_zip, street_name, latitude)
 
 rats_folds <- crossv_kfold(cleaner_rats1, k = 10)
 
-rats_folds <- rats_folds %>% mutate(model = map(train, ~ lm(latitude ~ ., data = .)))
+rats_folds <- rats_folds %>% mutate(model4 = map(train, ~ lm(latitude ~ ., data = .)))
 
-rats_folds$model[[1]] %>% summary()
+rats_folds$model4[[1]] %>% summary()
 
 ```
 
@@ -64,8 +78,8 @@ rats_folds$model[[1]] %>% summary()
 ```{r}
 set.seed(23) 
 cleaner_rats2 <- 
-  cleaner_rats %>% 
-  select(location_type, borough, longitude)
+  sample_1 %>% 
+  select(location_type, borough, street_name, incident_zip, longitude)
 
 rats_folds2 <- crossv_kfold(cleaner_rats2, k = 10)
 
@@ -75,27 +89,95 @@ rats_folds2$model[[1]] %>% summary()
 
 ```
 
+This is the longitude prediciton
 
+```{r}
+library(broom)
+
+prediction <- 
+  rats_folds2 %>%
+  mutate(predicted = map2(model, train, ~ augment(.x, newdata = .y))) %>% 
+  unnest(predicted)
+prediction
+```
+
+We compare by looking to residual
+
+```{r}
+prediction <- prediction %>% 
+  mutate(residual = .fitted - longitude)
+
+prediction%>%
+  ggplot(aes(longitude, residual)) +
+    geom_hline(yintercept = 0) +
+    geom_point() +
+    stat_smooth(method = "loess") +
+    theme_minimal()
+
+
+```
+
+
+We compare the R^2 and look at the residuals 
 
 
 ```{r}
-set.seed(23)
-# Select four variables from the mpg data set in ggplot2
-cleaner_rats %>%
-  select(borough, location_type, street_name, latitude) %>%
-  crossv_kfold(k=20)%>%
-  mutate(model = map(train, ~ lm(latitude ~ ., data = .))) %>%
-  unnest(map2(model, test, ~ augment(.x, newdata = .y))) %>%
-  group_by(.id) %>%
+rs <- prediction %>%
+  group_by(.id) %>% 
   summarise(
-    sst = sum((latitude - mean(latitude)) ^ 2),
-    sse = sum((latitude - .fitted) ^ 2),
-    r.squared = 1 - sse / sst
-  ) %>% 
-  # Plot
-  ggplot(aes(r.squared)) +
-    geom_density() +
-    geom_vline(aes(xintercept = mean(r.squared))) +
+    sst = sum((longitude - mean(longitude)) ^ 2), # Sum of Squares Total
+    sse = sum(residual ^ 2),          # Sum of Squares Residual/Error
+    r.squared = 1 - sse / sst         # Proportion of variance accounted for
+    )
+
+rs %>% 
+  ggplot(aes(r.squared, fill  = .id)) +
+    geom_histogram() +
+    geom_vline(aes(xintercept = mean(r.squared)))
+
+```
+
+
+
+Same process as above for the latitude
+
+```{r}
+library(broom)
+
+prediction2 <- 
+  rats_folds %>%
+  mutate(predicted = map2(model4, train, ~ augment(.x, newdata = .y))) %>% 
+  unnest(predicted)
+prediction
+```
+
+```{r}
+prediction2 <- prediction2 %>% 
+  mutate(residual = .fitted - latitude)
+
+prediction2%>%
+  ggplot(aes(latitude, residual)) +
+    geom_hline(yintercept = 0) +
+    geom_point() +
+    stat_smooth(method = "loess") +
     theme_minimal()
+```
+
+
+```{r}
+rs2 <- prediction2 %>%
+  group_by(.id) %>% 
+  summarise(
+    sst = sum((latitude - mean(latitude)) ^ 2), # Sum of Squares Total
+    sse = sum(residual ^ 2),          # Sum of Squares Residual/Error
+    r.squared = 1 - sse / sst         # Proportion of variance accounted for
+    )
+
+rs2 %>% 
+  ggplot(aes(r.squared, fill  = .id)) +
+    geom_histogram() +
+    geom_vline(aes(xintercept = mean(r.squared)))
+
+
 
 ```
