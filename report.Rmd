@@ -1,18 +1,24 @@
 ---
 title: "Report"
-output: html_document
-date: "2023-12-03"
+output: 
+  html_document:
+    theme: simplex
+    code_folding: hide
+    toc: yes
+    toc_float:
+      collapsed: true
 ---
 
-# Final Report
+## Motivations
 
-## Motivation
+![](pictures/ratpic.jpeg){width=300px}
+
 
 As new and returning residents of New York, we are intrigued by the bustling rat population around us and across each borough. We are interested in exploring the impact of factors like day of the week, month, borough, latitude, longitude, and type of building has on rat sighting around New York. By understanding what influences the amount and location of rat sightings, we will be able to know which areas of the city to avoid and which areas may have the world's best ratatouille.
 
-## History of Rats in NYC
+## Background: History of Rats in NYC
 
-Brown rats are not indigenous to New York; they are a product of the colonization of North America and were brought over on ships in the 18th century. The brown rat is the most common variety in New York today and slowly overtook the black rat population due to their highly aggressive and dominant nature. Brown rats' ability to tunnel through and eat just about anything has lead them to be one of the top pest in New York for millennia. A testament to their cultural relevance, the Rolling Stones 1978 record, Shattered, made a reference to them: "We've got rats on the west side". More recently, these omnivorous creatures have even spurred the creation of a city government position titled Director of Rodent Mitigation or, colloquially, "Rat Czar".
+Brown rats are not indigenous to New York; they are a product of the colonization of North America and were brought over on ships in the 18th century. The brown rat is the most common variety in New York today and slowly overtook the black rat population due to their highly aggressive and dominant nature. Brown rats' ability to tunnel through and eat just about anything has lead them to be one of the top pest in New York for millennia. A testament to their cultural relevance, the Rolling Stones 1978 record, Shattered, made a reference to the rats of New York City: "We've got rats on the west side". More recently, these omnivorous creatures have even spurred the creation of a city government position titled Director of Rodent Mitigation or, colloquially, "Rat Czar".
 
 ## Related Work
 
@@ -27,14 +33,67 @@ We set out to answer the following questions:
 - How do rat sightings vary by borough and where are they concentrated?
 - What are the important factors in predicting a rat sighting location?
 
+Throughout the course of working on the project, we became interested in sightings year-over-year and included some time series plots in the analysis.
+
 
 ## Data
 
-https://data.cityofnewyork.us/Social-Services/Rat-Sightings/3q43-55fe
+Our is publicly available from Open Data NYC (https://data.cityofnewyork.us/Social-Services/Rat-Sightings/3q43-55fe), downloaded in November, 2023. The raw data contains 232,090 records of rat sightings and variables relating to geographical location, type of location, and time of sighting. In order to begin the cleaning and analysis process, we loaded the following libraries:
+
+- `tidyverse`
+- `lubridate`
+- `readr`
+- `xts`
+- `RColorBrewer`
+- `ggthemes`
+- `gridExtra`
+- `leaflet`
+- `highcharter`
+- `scales`
+
+
+```{r, warning=F, message=F}
+library(tidyverse)
+library(lubridate)
+library(readr) 
+library(xts)
+library("RColorBrewer")
+library("ggthemes")
+library("gridExtra")
+library("leaflet")
+library("highcharter")
+library(scales)
+```
+
+
+
 
 ### Importing
 
+```{r, , warning=F, message=F}
+rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified")) %>%
+  janitor::clean_names() %>% 
+  mutate(created_date = mdy_hms(created_date)) %>%
+  mutate(sighting_year = year(created_date),
+         sighting_month_num = month(created_date),
+         sighting_month = month(created_date, label = TRUE, abbr = FALSE),
+         sighting_day = day(created_date),
+         sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
+```
+
 ### Cleaning
+
+- `created_date`: Date of rat sighting record
+- `sighting_year`: Year of sighting
+- `sighting_month`: Month of sighting
+- `sighting_day`: Sighting day of the month
+- `sighting_weekday`: Sighting day of the week
+- `location_type`: Rat sighting location type (Government Building, 3+ Family Apt. Building, Construction site, etc.)
+- `city`: City of sighting
+- `borough`: Borough of sighting
+- `latitude`: Latitude of sighting
+- `longitude`: Longitude of sighting
+
 
 ## Exploratory Analyses
 
