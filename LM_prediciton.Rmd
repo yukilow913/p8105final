@@ -2,13 +2,15 @@
 title: "LM_prediction"
 author: "Arthur Starodynov"
 date: "2023-12-02"
-output: html_document
+output: pdf_document
 ---
 
 Load packages 
 
 
-```{r, message = FALSE}
+
+
+```{r, message = FALSE,}
 library(tidyverse)
 library(lubridate)
 library(readr) 
@@ -24,14 +26,31 @@ library("highcharter")
 library(scales)
 library(leaflet.extras)
 library(modelr)
+rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified")) %>%
+  janitor::clean_names() %>% 
+  mutate(created_date = mdy_hms(created_date)) %>%
+  mutate(sighting_year = year(created_date),
+         sighting_month_num = month(created_date),
+         sighting_month = month(created_date, label = TRUE, abbr = FALSE),
+         sighting_day = day(created_date),
+         sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
 ```
+
+
+
+
 
 
 
 Clean data set more on the predictor variables that were googled through research to have the most effect on rat sightings, keeping borough and location type. 
 
 
-```{r}
+
+
+
+
+
+```{r, results= FALSE}
 cleaner_rats <- 
   rats_raw %>%
   drop_na(descriptor, location_type, incident_address, incident_zip,street_name, borough, latitude, longitude) %>%
@@ -45,10 +64,19 @@ sample_1 <- cleaner_rats[sample(nrow(cleaner_rats), 500), ]
 ```
 
 
+
+
+
+
 Run a linear model on the cleaner data set to be able to see which predictor variables had the most impact on the model by looking at their P values. 
 
 
-```{r}
+
+
+
+
+
+```{r, results= FALSE}
 model1 <-  lm(latitude ~ borough + location_type + incident_zip + street_name, data = sample_1)
 model2 <-  lm(longitude ~ borough + location_type + incident_zip + street_name, data = sample_1)
 summary(model1)
@@ -58,9 +86,18 @@ summary(model2)
 ```
 
 
+
+
+
+
+
 Simply run a kfold technique to have a training and testing data set, run a new linear regression model to see the effect on latitude using 
 
-```{r}
+
+
+
+
+```{r, results = FALSE}
 set.seed(23) 
 cleaner_rats1 <- 
   sample_1 %>% 
@@ -75,7 +112,7 @@ rats_folds$model4[[1]] %>% summary()
 ```
 
 
-```{r}
+```{r, results = FALSE}
 set.seed(23) 
 cleaner_rats2 <- 
   sample_1 %>% 
@@ -91,7 +128,7 @@ rats_folds2$model[[1]] %>% summary()
 
 This is the longitude prediciton
 
-```{r}
+```{r, results = FALSE}
 library(broom)
 
 prediction <- 
@@ -141,7 +178,7 @@ rs %>%
 
 Same process as above for the latitude
 
-```{r}
+```{r, results = FALSE}
 library(broom)
 
 prediction2 <- 
