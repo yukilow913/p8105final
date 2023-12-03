@@ -33,12 +33,13 @@ cleaner_rats <-
 
 cleaner_rats <- as.data.frame(unclass(cleaner_rats),stringsAsFactors=TRUE)
 cleaner_rats
+sample_1 <- cleaner_rats[sample(nrow(cleaner_rats), 500), ]
 ```
 
 
 ```{r}
-model1 <-  lm(latitude ~ borough + location_type + incident_zip, data = cleaner_rats)
-model2 <-  lm(longitude ~ borough + location_type + incident_zip, data = cleaner_rats)
+model1 <-  lm(latitude ~ borough + location_type + incident_zip, data = sample_1)
+model2 <-  lm(longitude ~ borough + location_type + incident_zip, data = sample_1)
 summary(model1)
 summary(model2)
 
@@ -49,7 +50,7 @@ summary(model2)
 ```{r}
 set.seed(23) 
 cleaner_rats1 <- 
-  cleaner_rats %>% 
+  sample_1 %>% 
   select(location_type, borough, latitude)
 
 rats_folds <- crossv_kfold(cleaner_rats1, k = 10)
@@ -64,7 +65,7 @@ rats_folds$model[[1]] %>% summary()
 ```{r}
 set.seed(23) 
 cleaner_rats2 <- 
-  cleaner_rats %>% 
+  sample_1 %>% 
   select(location_type, borough, longitude)
 
 rats_folds2 <- crossv_kfold(cleaner_rats2, k = 10)
@@ -75,27 +76,42 @@ rats_folds2$model[[1]] %>% summary()
 
 ```
 
+```{r}
+library(broom)
 
+prediction <- 
+  rats_folds2 %>%
+  mutate(predicted = map2(model, train, ~ augment(.x, newdata = .y))) %>% 
+  unnest(predicted)
+prediction
+```
 
 
 ```{r}
-set.seed(23)
-# Select four variables from the mpg data set in ggplot2
-cleaner_rats %>%
-  select(borough, location_type, street_name, latitude) %>%
-  crossv_kfold(k=20)%>%
-  mutate(model = map(train, ~ lm(latitude ~ ., data = .))) %>%
-  unnest(map2(model, test, ~ augment(.x, newdata = .y))) %>%
-  group_by(.id) %>%
-  summarise(
-    sst = sum((latitude - mean(latitude)) ^ 2),
-    sse = sum((latitude - .fitted) ^ 2),
-    r.squared = 1 - sse / sst
-  ) %>% 
-  # Plot
-  ggplot(aes(r.squared)) +
-    geom_density() +
-    geom_vline(aes(xintercept = mean(r.squared))) +
+prediction <- prediction %>% 
+  mutate(residual = .fitted - longitude)
+
+prediction%>%
+  ggplot(aes(longitude, residual)) +
+    geom_hline(yintercept = 0) +
+    geom_point() +
+    stat_smooth(method = "loess") +
     theme_minimal()
+
+
+```
+```{r}
+rs <- prediction %>%
+  group_by(.id) %>% 
+  summarise(
+    sst = sum((longitude - mean(longitude)) ^ 2), # Sum of Squares Total
+    sse = sum(residual ^ 2),          # Sum of Squares Residual/Error
+    r.squared = 1 - sse / sst         # Proportion of variance accounted for
+    )
+
+rs %>% 
+  ggplot(aes(r.squared, fill  = .id)) +
+    geom_histogram() +
+    geom_vline(aes(xintercept = mean(r.squared)))
 
 ```
