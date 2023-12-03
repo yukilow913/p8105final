@@ -26,33 +26,36 @@ rats_raw
 ```
 
 
-# ANOVA by day of week
+# T-test by weekend/weekday and latitude, T-test by weekend/weekday and longitude
 
 ```{r}
-library(MASS)
-names(rats_raw)
+rats_weekend <- rats_raw %>% 
+  mutate(weekend = if_else(sighting_weekday %in% c("Sunday", "Saturday"), 1, 0))
 
-rats_dow <- rats_raw %>%
+a <- t.test(rats_weekend$weekend, rats_weekend$longitude)
+b <- t.test(rats_weekend$weekend, rats_weekend$latitude)
+```
+
+
+# Count Averages by day of week
+
+```{r}
+rats_raw %>%
   group_by(sighting_weekday) %>%
-  count()
-
-aov_dow <- aov(n ~ sighting_weekday, data = rats_dow)
+  count() %>%
+  knitr::kable(col.names = c("Day of Week", "# of Rat Sightings"))
 ```
 
 
-# T-test by weekend/weekday
+# Count Averages by location type
 
 ```{r}
-rats_weekend <- 
-rats_raw %>% 
-  mutate(weekend = if_else(sighting_weekday %in% c("Sunday", "Saturday"), 1, 0)) %>%
-  group_by(weekend) %>%
-  count()
-
+rats_raw %>%
+  group_by(location_type) %>%
+  count() %>%
+  knitr::kable(col.names = c("Location Type", "# of Rat Sightings"))
 ```
 
-
-# ANOVA by location type
 
 
 # ANOVA by borough

@@ -1,0 +1,39 @@
+---
+title: "Report"
+output: html_document
+date: "2023-12-03"
+---
+
+# Final Report
+
+## Motivation
+
+As new and returning residents of New York, we are intrigued by the bustling rat population around us and across each borough. We are interested in exploring the impact of factors like day of the week, month, borough, latitude, longitude, and type of building has on rat sighting around New York. By understanding what influences the amount and location of rat sightings, we will be able to know which areas of the city to avoid and which areas may have the world's best ratatouille.
+
+## History of Rats in NYC
+
+Brown rats are not indigenous to New York; they are a product of the colonization of North America and were brought over on ships in the 18th century. The brown rat is the most common variety in New York today and slowly overtook the black rat population due to their highly aggressive and dominant nature. Brown rats' ability to tunnel through and eat just about anything has lead them to be one of the top pest in New York for millennia. These omnivorous creatures have even spurred the recent creation of a city government position titled Director of Rodent Mitigation or, colloquially, "Rat Czar".
+
+## Related Work
+
+There is currently an estimated 3 million rats in New York, an increase from past years. Because they are a mainstay of the city, much work has been conducted in the past ranging from statistics projects, Health Department analysis, to newspaper articles. The NYC Health Department has work on mapping rat activity at inspections (https://a816-dohbesp.nyc.gov/IndicatorPublic/Rats/). In 2014, a statistician published work estimating the number of rats in New York (https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1740-9713.2014.00764.x); he 
+
+
+## Initial Questions
+
+## Data
+
+https://data.cityofnewyork.us/Social-Services/Rat-Sightings/3q43-55fe
+
+### Importing
+
+### Cleaning
+
+## Exploratory Analyses
+
+
+
+
+## Additional Analyses
+
+## Discussion
