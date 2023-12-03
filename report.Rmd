@@ -12,14 +12,21 @@ As new and returning residents of New York, we are intrigued by the bustling rat
 
 ## History of Rats in NYC
 
-Brown rats are not indigenous to New York; they are a product of the colonization of North America and were brought over on ships in the 18th century. The brown rat is the most common variety in New York today and slowly overtook the black rat population due to their highly aggressive and dominant nature. Brown rats' ability to tunnel through and eat just about anything has lead them to be one of the top pest in New York for millennia. These omnivorous creatures have even spurred the recent creation of a city government position titled Director of Rodent Mitigation or, colloquially, "Rat Czar".
+Brown rats are not indigenous to New York; they are a product of the colonization of North America and were brought over on ships in the 18th century. The brown rat is the most common variety in New York today and slowly overtook the black rat population due to their highly aggressive and dominant nature. Brown rats' ability to tunnel through and eat just about anything has lead them to be one of the top pest in New York for millennia. A testament to their cultural relevance, the Rolling Stones 1978 record, Shattered, made a reference to them: "We've got rats on the west side". More recently, these omnivorous creatures have even spurred the creation of a city government position titled Director of Rodent Mitigation or, colloquially, "Rat Czar".
 
 ## Related Work
 
-There is currently an estimated 3 million rats in New York, an increase from past years. Because they are a mainstay of the city, much work has been conducted in the past ranging from statistics projects, Health Department analysis, to newspaper articles. The NYC Health Department has work on mapping rat activity at inspections (https://a816-dohbesp.nyc.gov/IndicatorPublic/Rats/). In 2014, a statistician published work estimating the number of rats in New York (https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1740-9713.2014.00764.x); he 
+There is currently an estimated 3 million rats in New York, an increase from past years. Because they are a mainstay of the city, much work has been conducted in the past ranging from statistics projects, Health Department analysis, to newspaper articles. The NYC Health Department has work on mapping rat activity at inspections (https://a816-dohbesp.nyc.gov/IndicatorPublic/Rats/). In 2014, a statistician published work estimating the number of rats in New York (https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1740-9713.2014.00764.x); he importantly notes that the distribution of rat sightings reflects cultural values, geography, and land use in addition to pure counts.
 
 
 ## Initial Questions
+
+We set out to answer the following questions:
+
+- How do rat sightings vary over time (month, day of the week, year)
+- How do rat sightings vary by borough and where are they concentrated?
+- What are the important factors in predicting a rat sighting location?
+
 
 ## Data
 
