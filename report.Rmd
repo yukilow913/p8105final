@@ -122,6 +122,70 @@ by_year
 
 We see a substantial increase in the number of rat sightings after 2020. This increase is consistent with the city of New York's rat media coverage and the impact of the COVID-19 pandemic. With more restaurants closed and more restaurants offering outdoor dining, rats are more likely to scavenge outside. A warmer, wetter than usual summer in 2021 also contributed to favorable rat conditions. 
 
+### Rat Sightings by Month
+
+```{r}
+by_month <- rats_raw %>% 
+  group_by(sighting_month) %>% 
+  count() %>% 
+  ggplot(aes(x = sighting_month, y = n, fill = n)) + 
+  geom_histogram(stat = "identity", position = "dodge") +
+  theme(legend.position ='none',axis.title = element_text(),axis.text.x = element_text(size = 9)) +
+  xlab("Month") + 
+  ylab("Count") +
+  geom_text(aes(label = n), vjust = -0.1, size = 3.75) +
+  ggtitle('Count of Rat Sightings by Month') + 
+  scale_fill_gradientn(name = '',colours = rev(brewer.pal(10,'Spectral'))) 
+
+by_month
+```
+
+The most rat sightings are in the summer months with a peak in July. Sightings taper off in the fall, reaching a low in December, and then start to increase in the spring. Warmer weather is more favorable to rat survival and helps their populations grow.
+
+### Rat Sightings by Day of the Week
+
+```{r}
+by_day <- rats_raw %>% 
+  group_by(sighting_weekday) %>% 
+  count() %>% 
+  ggplot(aes(x = sighting_weekday, y = n, fill = n)) + 
+  geom_histogram(stat = "identity", position = "dodge") +
+  theme(legend.position ='none',axis.title = element_text(),axis.text.x = element_text(size = 12)) +
+  xlab("Weekday") + 
+  ylab("Count") +
+  geom_text(aes(label = n), vjust = -0.1, size = 4) +
+  ggtitle('Count of Rat Sightings by Day of Week') + 
+  scale_fill_gradientn(name = '',colours = rev(brewer.pal(10,'Spectral'))) 
+
+by_day
+```
+
+Weekdays have the most rat sightings, peaking on Mondays and staying relatively high throughout the week, while weekends have much lower counts. 
+
+
+### Rat Sightings by Location Type
+
+```{r}
+for_location_type <- rats_raw %>% 
+  drop_na(location_type) %>%
+  filter(location_type != "Other (Explain Below)") %>%
+  group_by(location_type) %>%
+  mutate(count_loc = n()) %>%
+  ungroup() %>%
+  filter(location_type %in% c("3+ Family Apt. Building", "1-2 Family Dwelling", "3+ Family Mixed Use Building", "Commercial Building", "Vacant Lot", "Construction Site"))
+
+ggplot(data = for_location_type, aes(x = fct_infreq(location_type))) + 
+  geom_bar() +
+  theme_minimal() + 
+  coord_flip() +
+  labs(title = "Top 6 Location Types for Sightings",
+       x = "Location Type",
+       y = "Count")
+```
+
+The above shows the top 6 location types for rat sightings. 3+ Family Apt. Buildings report the highest amount of rat sightings among all location types, while 1-2 Family Dwellings and 3+ Family Mixed Use Buildings report the next two highest amount of sightings. These location types are followed by commercial buildings, vacant lots, and construction sites.
+
+### 
 
 ## Additional Analyses
 
