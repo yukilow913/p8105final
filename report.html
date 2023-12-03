@@ -1640,7 +1640,7 @@ analysis.</p>
 <p>Our is publicly available from Open Data NYC (<a href="https://data.cityofnewyork.us/Social-Services/Rat-Sightings/3q43-55fe" class="uri">https://data.cityofnewyork.us/Social-Services/Rat-Sightings/3q43-55fe</a>),
 downloaded in November, 2023. The raw data contains 232,090 records of
 rat sightings and variables relating to geographical location, type of
-location, and time of sighting. In order to begin the cleaning and
+location, and time of sighting. In order to begin the data cleaning and
 analysis process, we loaded the following libraries:</p>
 <ul>
 <li><code>tidyverse</code></li>
@@ -1664,9 +1664,13 @@ library(&quot;gridExtra&quot;)
 library(&quot;leaflet&quot;)
 library(&quot;highcharter&quot;)
 library(scales)</code></pre>
-<div id="importing" class="section level3">
-<h3>Importing</h3>
-<pre class="r"><code>rats_raw &lt;- read.csv(&quot;./Rat_Sightings.csv&quot;, na = c(&quot;&quot;, &quot;NA&quot;, &quot;N/A&quot;, &quot;Unspecified&quot;)) %&gt;%
+<div id="importing-and-cleaning" class="section level3">
+<h3>Importing and Cleaning</h3>
+<p>We begin by importing the rat sightings data using the
+<code>read_csv</code> function, clean up the variable names with the
+<code>clean_names</code> function, and create some more useful date
+variables in a <code>mutate</code> pipeline.</p>
+<pre class="r"><code>rats_raw &lt;- read_csv(&quot;./Rat_Sightings.csv&quot;, na = c(&quot;&quot;, &quot;NA&quot;, &quot;N/A&quot;, &quot;Unspecified&quot;)) %&gt;%
   janitor::clean_names() %&gt;% 
   mutate(created_date = mdy_hms(created_date)) %&gt;%
   mutate(sighting_year = year(created_date),
@@ -1674,9 +1678,9 @@ library(scales)</code></pre>
          sighting_month = month(created_date, label = TRUE, abbr = FALSE),
          sighting_day = day(created_date),
          sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) </code></pre>
-</div>
-<div id="cleaning" class="section level3">
-<h3>Cleaning</h3>
+<p>There are 232,090 records of rat sightings, ranging from 2010 to 2023
+and across all 5 boroughs.</p>
+<p>Important variables to our analysis include:</p>
 <ul>
 <li><code>created_date</code>: Date of rat sighting record</li>
 <li><code>sighting_year</code>: Year of sighting</li>

@@ -38,7 +38,7 @@ Throughout the course of working on the project, we became interested in sightin
 
 ## Data
 
-Our is publicly available from Open Data NYC (https://data.cityofnewyork.us/Social-Services/Rat-Sightings/3q43-55fe), downloaded in November, 2023. The raw data contains 232,090 records of rat sightings and variables relating to geographical location, type of location, and time of sighting. In order to begin the cleaning and analysis process, we loaded the following libraries:
+Our is publicly available from Open Data NYC (https://data.cityofnewyork.us/Social-Services/Rat-Sightings/3q43-55fe), downloaded in November, 2023. The raw data contains 232,090 records of rat sightings and variables relating to geographical location, type of location, and time of sighting. In order to begin the data cleaning and analysis process, we loaded the following libraries:
 
 - `tidyverse`
 - `lubridate`
@@ -66,12 +66,12 @@ library(scales)
 ```
 
 
+### Importing and Cleaning
 
-
-### Importing
+We begin by importing the rat sightings data using the `read_csv` function, clean up the variable names with the `clean_names` function, and create some more useful date variables in a `mutate` pipeline.
 
 ```{r, , warning=F, message=F}
-rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified")) %>%
+rats_raw <- read_csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified")) %>%
   janitor::clean_names() %>% 
   mutate(created_date = mdy_hms(created_date)) %>%
   mutate(sighting_year = year(created_date),
@@ -81,7 +81,10 @@ rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified
          sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
 ```
 
-### Cleaning
+There are 232,090 records of rat sightings, ranging from `r rats_raw %>% summarize(min = min(sighting_year)) %>% pull(min)` to `r rats_raw %>% summarize(min = max(sighting_year)) %>% pull(min)` and across all 5 boroughs.
+
+
+Important variables to our analysis include:
 
 - `created_date`: Date of rat sighting record
 - `sighting_year`: Year of sighting
@@ -97,9 +100,35 @@ rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified
 
 ## Exploratory Analyses
 
+We first explored how rat sightings vary over time (month, day of the week, year) and how rat sightings vary by borough. To do so, we used simple tables, bar charts, line plots, heat maps, and interactive maps.
 
+### Rat Sightings by Year
+
+```{r}
+by_year <- rats_raw %>% 
+  group_by(sighting_year) %>% 
+  count() %>% 
+  ggplot(aes(x = sighting_year, y = n, fill = n)) + 
+  geom_histogram(stat = "identity", position = "dodge") +
+  theme(legend.position ='none',axis.title = element_text(),axis.text.x = element_text(size = 12)) +
+  xlab("Year") + 
+  ylab("Count") +
+  geom_text(aes(label = n), vjust = -0.1, size = 3.75) +
+  ggtitle('Count of Rat Sightings through the Years') + 
+  scale_fill_gradientn(name = '',colours = rev(brewer.pal(10,'Spectral'))) 
+
+by_year
+```
+
+We see a substantial increase in the number of rat sightings after 2020. This increase is consistent with the city of New York's rat media coverage and the impact of the COVID-19 pandemic. With more restaurants closed and more restaurants offering outdoor dining, rats are more likely to scavenge outside. A warmer, wetter than usual summer in 2021 also contributed to favorable rat conditions. 
 
 
 ## Additional Analyses
 
 ## Discussion
+
+- pandemic --> restaurants closed, rats scavenging outside so more sightings. Outdoor dining.
+- warmer, wetter summer than usual helps rat populations
+
+
+
