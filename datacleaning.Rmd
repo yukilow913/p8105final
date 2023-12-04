@@ -21,6 +21,7 @@ library("gridExtra")
 library("leaflet")
 library("highcharter")
 library(scales)
+library(leaflet.extras)
 ```
 
 ```{r, warning = FALSE}
@@ -33,6 +34,7 @@ rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified
          sighting_day = day(created_date),
          sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
 ```
+
 
 Overall trend in rats 
 ```{r}
@@ -184,7 +186,7 @@ nyc = rats_raw %>%
 center_lon = median(nyc$longitude,na.rm = TRUE)
 center_lat = median(nyc$latitude,na.rm = TRUE)
 
-count = data %>%
+count = nyc %>%
   group_by(location) %>%
   count()
 
