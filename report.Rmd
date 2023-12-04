@@ -61,6 +61,7 @@ library("RColorBrewer")
 library("ggthemes")
 library("gridExtra")
 library("leaflet")
+library(leaflet.extras)
 library("highcharter")
 library(scales)
 ```
@@ -185,7 +186,54 @@ ggplot(data = for_location_type, aes(x = fct_infreq(location_type))) +
 
 The above shows the top 6 location types for rat sightings. 3+ Family Apt. Buildings report the highest amount of rat sightings among all location types, while 1-2 Family Dwellings and 3+ Family Mixed Use Buildings report the next two highest amount of sightings. These location types are followed by commercial buildings, vacant lots, and construction sites.
 
-### 
+### Time Series plot
+Include?
+
+### Interactive Maps
+
+In order to display rat sightings across New York City, we opted to create interactive maps. The first shows all rat sightings and their geo-location while the second is a heat map.
+
+```{r split = FALSE, fig.align = 'default', warning = FALSE, out.width="100%"}
+## Overall Sightings Map and Heat Map
+
+top = 40.917577 # north lat
+left = -74.259090 # west long
+right = -73.700272 # east long
+bottom =  40.477399 # south lat
+
+
+nyc = rats_raw %>%
+  filter(latitude >= bottom) %>%
+  filter ( latitude <= top) %>%
+  filter( longitude >= left ) %>%
+  filter(longitude <= right)
+
+center_lon = median(nyc$longitude,na.rm = TRUE)
+center_lat = median(nyc$latitude,na.rm = TRUE)
+
+# count = data %>%
+#   group_by(location) %>%
+#   count()
+# 
+# count 
+# 
+# nyc = merge(nyc, count, by = "location")
+
+factpal = colorFactor("blue", nyc$n)
+
+# nyc %>%
+# leaflet() %>% 
+#   addProviderTiles("Esri.NatGeoWorldMap") %>%
+#   addCircles(lng = ~longitude, lat = ~latitude)  %>%
+#   setView(lng=center_lon, lat=center_lat,zoom = 10) 
+
+nyc %>%
+  leaflet() %>%
+  addProviderTiles("Esri.NatGeoWorldMap") %>%
+  addHeatmap(lng = ~longitude, lat = ~latitude, intensity = ~(nyc$n), blur = 20, max = 0.05, radius = 15) %>%
+  setView(lng=center_lon, lat=center_lat,zoom = 10)
+
+```
 
 ## Additional Analyses
 
