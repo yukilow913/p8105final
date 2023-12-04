@@ -1,0 +1,66 @@
+---
+title: "Statistical tests"
+output: html_document
+date: "2023-12-03"
+---
+
+```{r, message = F}
+library(tidyverse)
+library(lubridate)
+library(readr) 
+```
+
+# Data
+
+```{r, warning = F, message = F}
+rats_raw <- read.csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified")) %>%
+  janitor::clean_names() %>% 
+  mutate(created_date = mdy_hms(created_date)) %>%
+  mutate(sighting_year = year(created_date),
+         sighting_month_num = month(created_date),
+         sighting_month = month(created_date, label = TRUE, abbr = FALSE),
+         sighting_day = day(created_date),
+         sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
+
+rats_raw
+```
+
+
+# T-test by weekend/weekday and latitude, T-test by weekend/weekday and longitude
+
+```{r}
+rats_weekend <- rats_raw %>% 
+  mutate(weekend = if_else(sighting_weekday %in% c("Sunday", "Saturday"), 1, 0))
+
+a <- t.test(rats_weekend$weekend, rats_weekend$longitude)
+b <- t.test(rats_weekend$weekend, rats_weekend$latitude)
+```
+
+
+# Count Averages by day of week
+
+```{r}
+rats_raw %>%
+  group_by(sighting_weekday) %>%
+  count() %>%
+  knitr::kable(col.names = c("Day of Week", "# of Rat Sightings"))
+```
+
+
+# Count Averages by location type
+
+```{r}
+rats_raw %>%
+  group_by(location_type) %>%
+  count() %>%
+  knitr::kable(col.names = c("Location Type", "# of Rat Sightings"))
+```
+
+
+
+# ANOVA by borough
+
+
+
+
+

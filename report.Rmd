@@ -1,0 +1,246 @@
+---
+title: "Report"
+output: 
+  html_document:
+    theme: simplex
+    code_folding: hide
+    toc: yes
+    toc_float:
+      collapsed: true
+---
+
+## Motivations
+
+![](pictures/ratpic.jpeg){width=300px}
+
+
+As new and returning residents of New York, we are intrigued by the bustling rat population around us and across each borough. We are interested in exploring the impact of factors like day of the week, month, borough, latitude, longitude, and type of building has on rat sighting around New York. By understanding what influences the amount and location of rat sightings, we will be able to know which areas of the city to avoid and which areas may have the world's best ratatouille.
+
+## Background: History of Rats in NYC
+
+Brown rats are not indigenous to New York; they are a product of the colonization of North America and were brought over on ships in the 18th century. The brown rat is the most common variety in New York today and slowly overtook the black rat population due to their highly aggressive and dominant nature. Brown rats' ability to tunnel through and eat just about anything has lead them to be one of the top pest in New York for millennia. A testament to their cultural relevance, the Rolling Stones 1978 record, Shattered, made a reference to the rats of New York City: "We've got rats on the west side". More recently, these omnivorous creatures have even spurred the creation of a city government position titled Director of Rodent Mitigation or, colloquially, "Rat Czar".
+
+## Related Work
+
+There is currently an estimated 3 million rats in New York, an increase from past years. Because they are a mainstay of the city, much work has been conducted in the past ranging from statistics projects, Health Department analysis, to newspaper articles. The NYC Health Department has work on mapping rat activity at inspections (https://a816-dohbesp.nyc.gov/IndicatorPublic/Rats/). In 2014, a statistician published work estimating the number of rats in New York (https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1740-9713.2014.00764.x); he importantly notes that the distribution of rat sightings reflects cultural values, geography, and land use in addition to pure counts.
+
+
+## Initial Questions
+
+We set out to answer the following questions:
+
+- How do rat sightings vary over time (month, day of the week, year)
+- How do rat sightings vary by borough and where are they concentrated?
+- What are the important factors in predicting a rat sighting location?
+
+Throughout the course of working on the project, we became interested in sightings year-over-year and included some time series plots in the analysis.
+
+
+## Data
+
+Our is publicly available from Open Data NYC (https://data.cityofnewyork.us/Social-Services/Rat-Sightings/3q43-55fe), downloaded in November, 2023. The raw data contains 232,090 records of rat sightings and variables relating to geographical location, type of location, and time of sighting. In order to begin the data cleaning and analysis process, we loaded the following libraries:
+
+- `tidyverse`
+- `lubridate`
+- `readr`
+- `xts`
+- `RColorBrewer`
+- `ggthemes`
+- `gridExtra`
+- `leaflet`
+- `highcharter`
+- `scales`
+
+
+```{r, warning=F, message=F}
+library(tidyverse)
+library(lubridate)
+library(readr) 
+library(xts)
+library("RColorBrewer")
+library("ggthemes")
+library("gridExtra")
+library("leaflet")
+library(leaflet.extras)
+library("highcharter")
+library(scales)
+```
+
+
+### Importing and Cleaning
+
+We begin by importing the rat sightings data using the `read_csv` function, clean up the variable names with the `clean_names` function, and create some more useful date variables in a `mutate` pipeline.
+
+```{r, , warning=F, message=F}
+rats_raw <- read_csv("./Rat_Sightings.csv", na = c("", "NA", "N/A", "Unspecified")) %>%
+  janitor::clean_names() %>% 
+  mutate(created_date = mdy_hms(created_date)) %>%
+  mutate(sighting_year = year(created_date),
+         sighting_month_num = month(created_date),
+         sighting_month = month(created_date, label = TRUE, abbr = FALSE),
+         sighting_day = day(created_date),
+         sighting_weekday = wday(created_date, label = TRUE, abbr = FALSE)) 
+```
+
+There are 232,090 records of rat sightings, ranging from `r rats_raw %>% summarize(min = min(sighting_year)) %>% pull(min)` to `r rats_raw %>% summarize(min = max(sighting_year)) %>% pull(min)` and across all 5 boroughs.
+
+
+Important variables to our analysis include:
+
+- `created_date`: Date of rat sighting record
+- `sighting_year`: Year of sighting
+- `sighting_month`: Month of sighting
+- `sighting_day`: Sighting day of the month
+- `sighting_weekday`: Sighting day of the week
+- `location_type`: Rat sighting location type (Government Building, 3+ Family Apt. Building, Construction site, etc.)
+- `city`: City of sighting
+- `borough`: Borough of sighting
+- `latitude`: Latitude of sighting
+- `longitude`: Longitude of sighting
+
+
+## Exploratory Analyses
+
+We first explored how rat sightings vary over time (month, day of the week, year) and how rat sightings vary by borough. To do so, we used simple tables, bar charts, line plots, heat maps, and interactive maps.
+
+### Rat Sightings by Year
+
+```{r}
+by_year <- rats_raw %>% 
+  group_by(sighting_year) %>% 
+  count() %>% 
+  ggplot(aes(x = sighting_year, y = n, fill = n)) + 
+  geom_histogram(stat = "identity", position = "dodge") +
+  theme(legend.position ='none',axis.title = element_text(),axis.text.x = element_text(size = 12)) +
+  xlab("Year") + 
+  ylab("Count") +
+  geom_text(aes(label = n), vjust = -0.1, size = 3.75) +
+  ggtitle('Count of Rat Sightings through the Years') + 
+  scale_fill_gradientn(name = '',colours = rev(brewer.pal(10,'Spectral'))) 
+
+by_year
+```
+
+We see a substantial increase in the number of rat sightings after 2020. This increase is consistent with the city of New York's rat media coverage and the impact of the COVID-19 pandemic. With more restaurants closed and more restaurants offering outdoor dining, rats are more likely to scavenge outside. A warmer, wetter than usual summer in 2021 also contributed to favorable rat conditions. 
+
+### Rat Sightings by Month
+
+```{r}
+by_month <- rats_raw %>% 
+  group_by(sighting_month) %>% 
+  count() %>% 
+  ggplot(aes(x = sighting_month, y = n, fill = n)) + 
+  geom_histogram(stat = "identity", position = "dodge") +
+  theme(legend.position ='none',axis.title = element_text(),axis.text.x = element_text(size = 9)) +
+  xlab("Month") + 
+  ylab("Count") +
+  geom_text(aes(label = n), vjust = -0.1, size = 3.75) +
+  ggtitle('Count of Rat Sightings by Month') + 
+  scale_fill_gradientn(name = '',colours = rev(brewer.pal(10,'Spectral'))) 
+
+by_month
+```
+
+The most rat sightings are in the summer months with a peak in July. Sightings taper off in the fall, reaching a low in December, and then start to increase in the spring. Warmer weather is more favorable to rat survival and helps their populations grow.
+
+### Rat Sightings by Day of the Week
+
+```{r}
+by_day <- rats_raw %>% 
+  group_by(sighting_weekday) %>% 
+  count() %>% 
+  ggplot(aes(x = sighting_weekday, y = n, fill = n)) + 
+  geom_histogram(stat = "identity", position = "dodge") +
+  theme(legend.position ='none',axis.title = element_text(),axis.text.x = element_text(size = 12)) +
+  xlab("Weekday") + 
+  ylab("Count") +
+  geom_text(aes(label = n), vjust = -0.1, size = 4) +
+  ggtitle('Count of Rat Sightings by Day of Week') + 
+  scale_fill_gradientn(name = '',colours = rev(brewer.pal(10,'Spectral'))) 
+
+by_day
+```
+
+Weekdays have the most rat sightings, peaking on Mondays and staying relatively high throughout the week, while weekends have much lower counts. 
+
+
+### Rat Sightings by Location Type
+
+```{r}
+for_location_type <- rats_raw %>% 
+  drop_na(location_type) %>%
+  filter(location_type != "Other (Explain Below)") %>%
+  group_by(location_type) %>%
+  mutate(count_loc = n()) %>%
+  ungroup() %>%
+  filter(location_type %in% c("3+ Family Apt. Building", "1-2 Family Dwelling", "3+ Family Mixed Use Building", "Commercial Building", "Vacant Lot", "Construction Site"))
+
+ggplot(data = for_location_type, aes(x = fct_infreq(location_type))) + 
+  geom_bar() +
+  theme_minimal() + 
+  coord_flip() +
+  labs(title = "Top 6 Location Types for Sightings",
+       x = "Location Type",
+       y = "Count")
+```
+
+The above shows the top 6 location types for rat sightings. 3+ Family Apt. Buildings report the highest amount of rat sightings among all location types, while 1-2 Family Dwellings and 3+ Family Mixed Use Buildings report the next two highest amount of sightings. These location types are followed by commercial buildings, vacant lots, and construction sites.
+
+### Time Series plot
+Include?
+
+### Interactive Maps
+
+In order to display rat sightings across New York City, we opted to create interactive maps. The first shows all rat sightings and their geo-location while the second is a heat map.
+
+```{r split = FALSE, fig.align = 'default', warning = FALSE, out.width="100%"}
+## Overall Sightings Map and Heat Map
+
+top = 40.917577 # north lat
+left = -74.259090 # west long
+right = -73.700272 # east long
+bottom =  40.477399 # south lat
+
+
+nyc = rats_raw %>%
+  filter(latitude >= bottom) %>%
+  filter ( latitude <= top) %>%
+  filter( longitude >= left ) %>%
+  filter(longitude <= right)
+
+center_lon = median(nyc$longitude,na.rm = TRUE)
+center_lat = median(nyc$latitude,na.rm = TRUE)
+
+# count = data %>%
+#   group_by(location) %>%
+#   count()
+# 
+# count 
+# 
+# nyc = merge(nyc, count, by = "location")
+
+factpal = colorFactor("blue", nyc$n)
+
+# nyc %>%
+# leaflet() %>% 
+#   addProviderTiles("Esri.NatGeoWorldMap") %>%
+#   addCircles(lng = ~longitude, lat = ~latitude)  %>%
+#   setView(lng=center_lon, lat=center_lat,zoom = 10) 
+
+nyc %>%
+  leaflet() %>%
+  addProviderTiles("Esri.NatGeoWorldMap") %>%
+  addHeatmap(lng = ~longitude, lat = ~latitude, intensity = ~(nyc$n), blur = 20, max = 0.05, radius = 15) %>%
+  setView(lng=center_lon, lat=center_lat,zoom = 10)
+
+```
+
+## Additional Analyses
+
+## Discussion
+
+- pandemic --> restaurants closed, rats scavenging outside so more sightings. Outdoor dining.
+- warmer, wetter summer than usual helps rat populations
+
+
+
