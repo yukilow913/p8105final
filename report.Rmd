@@ -237,10 +237,21 @@ nyc %>%
 
 ## Additional Analyses
 
+ 
+
 ## Discussion
 
-- pandemic --> restaurants closed, rats scavenging outside so more sightings. Outdoor dining.
-- warmer, wetter summer than usual helps rat populations
+When analyzing our data, we considered many different factors that could be contributors to varying rat 
+sightings in NYC. 
 
+We believe that the exponential increase in rat sightings at the end of 2020 and going into 2021 could be a result of the pandemic. Since most restaurants and establishments were closed and less people filled the streets during the lock down, the rats were able to scavenge outside without interruptions. They were most likely able to find food, shelter, and reproduce without people and cars scaring them away. This could have led to an increase in the rat population and more rat sightings. The pandemic also led to an increase in outdoor dining, and these dining areas are still being used today. This could explain the continued high number of rat sightings since there is more food scraps and crumbs outside for the rats to find. 
+
+More rat sightings are also observed during the summer months which can be explained by warmer and wetter weather than the rest of the year. Since the weather is warm, the rats are able to scurry around the streets comfortably instead of having to shelter for warmth and safety. Due to temperature, rats normally have their babies in the spring months which also explains an increase in rat sightings during the summer. 
+
+We also found that rat sightings are highest during the weekdays (especially towards the beginning) and lowest during the weekend. This can be attributed to people leaving their houses more on the weekdays to go to work, errands, and other obligations, compared to staying in their houses on the weekends. 
+
+When analyzing rat sightings by location type, we see that rats are seen most in 3+ family apt. buildings. This may be because these types of apartments are usually large buildings that are maintained with comfortable living conditions such as heat/air conditioning, clean environment, kitchens full of food, etc. That sounds like a perfect place for a rat to settle down. The number of rat sightings are followed by 1-2 family dwellings and 3+ family mixed use buildings which can be explained by the same argument as above. The rats are spotted less often in commercial buildings, vacant lots, and constructions sights. This is most likely because these types of locations are not conducive for a rat to survive. There is most likely little to no food available for them and harsh/uncomfortable living conditions. They especially would not want to nest around constructions sites since it is dangerous and sterile. 
+
+Our heat map of rat sightings shows that rats have pretty much taken over the entire city. However, as you zoom in, there are more dense pockets of rat sightings which could be contributed to restaurants or apartment buildings. There does not seem to be one borough that has significantly less rats than the rest. 
 
 
